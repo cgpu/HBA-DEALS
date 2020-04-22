@@ -106,8 +106,20 @@ suppressWarnings(suppressMessages(library(hbadeals)))
 # ############################### SCRIPT SECTION ###############################
 
 # Read metadata and select required columns
+accepted_status_labels_chr <- c("control", "case")
+
 metaData  <- read.table(metadata, header = TRUE, sep = ",")
 metaData  <- metaData[, c(sample_colname, status_colname)]
+
+# Validate metadata columns for required specs
+if (!(length(unique(metaData[[status]]))) == 2){
+    stop("The status column in the metadata table has more than 2 levels (eg. case, control, something_else).\nType ./rsem2hbadeals.R --help to check the metadata specifications.")
+}
+if(! (all(unique(metaData[[status]]) %in% accepted_status_labels_chr)) ) {
+    stop("The status column in the metadata table has values other {'control','case'}, which are the only ones accepted.\nType ./rsem2hbadeals.R --help to check the metadata specifications.")
+}
+
+# Convert to control,case to 1,2 as requested in hbadeals::hbadeals()
 metaData[[status_colname]] <- ifelse( metaData[[status_colname]] == "control", 1, 2)
 colnames(metaData)  <- c("sample_id", "status")
 
@@ -157,7 +169,7 @@ toKeepInOrder <- c("transcript_id", "gene_id", as.vector(metaData$sample_id) )
 countsData    <- countsData[, toKeepInOrder]
 # message("Done!")
 write.table(countsData,
-            file = paste0(output, "_countsData.csv"), 
+            file = paste0("countsData_", output),
             sep       =',',
             quote     = F,
             col.names = T,
@@ -166,7 +178,7 @@ write.table(countsData,
 # Run HBA-DEALS
 # message('\nRunning hbadeals::hbadeals(). NOTE: This step can take a while ..')
 res <-hbadeals::hbadeals(countsData     = countsData,
-                          labels        = metaData$label,
+                          labels        = as.factor(metaData$status),
                           n.cores       = n_cores,
                           isoform.level = isoform_level,
                           mcmc.iter     = mcmc_iter,
