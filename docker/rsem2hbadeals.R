@@ -112,10 +112,10 @@ metaData  <- read.table(metadata, header = TRUE, sep = ",")
 metaData  <- metaData[, c(sample_colname, status_colname)]
 
 # Validate metadata columns for required specs
-if (!(length(unique(metaData[[status]]))) == 2){
+if (!(length(unique(metaData[[status_colname]]))) == 2){
     stop("The status column in the metadata table has more than 2 levels (eg. case, control, something_else).\nType ./rsem2hbadeals.R --help to check the metadata specifications.")
 }
-if(! (all(unique(metaData[[status]]) %in% accepted_status_labels_chr)) ) {
+if(! (all(unique(metaData[[status_colname]]) %in% accepted_status_labels_chr)) ) {
     stop("The status column in the metadata table has values other {'control','case'}, which are the only ones accepted.\nType ./rsem2hbadeals.R --help to check the metadata specifications.")
 }
 
