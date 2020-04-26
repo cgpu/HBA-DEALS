@@ -165,7 +165,7 @@ countsData <- countsData[num.iso > 1, ]
 
 # Reorder countsData columns by metaData order !DANGEROUS TO RELY ON INDEXES!
 # message("\nOrdering 'countsData' columns according to 'metaData$sample_id' order ..")
-toKeepInOrder <- c("transcript_id", "gene_id", as.vector(metaData$sample_id) )
+toKeepInOrder <- c( "gene_id", "transcript_id", as.vector(metaData$sample_id) )
 countsData    <- countsData[, toKeepInOrder]
 # message("Done!")
 write.table(countsData,
